@@ -118,9 +118,18 @@ function convertNumber(num){
     return false;
 }
 
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 function createSliders(ahpUser){
 
     let spannames = [];
+    let SLIDERGROUP = [];
 
     for(let i = 0; i < ahpUser.criterias.names.length ; i++){
         for(let j = i+1 ; j < ahpUser.criterias.names.length; j++){
@@ -160,9 +169,15 @@ function createSliders(ahpUser){
         newSliderGroup.appendChild(newSpan1);
         newSliderGroup.appendChild(newCSlider);
         newSliderGroup.appendChild(newSpan2);
-        criterias_content.appendChild(newSliderGroup);
+        SLIDERGROUP.push(newSliderGroup);
     }
 
+    SLIDERGROUP = shuffle(SLIDERGROUP);
+    SLIDERGROUP.forEach(slider => {
+        criterias_content.appendChild(slider);
+    })
+
+    SLIDERGROUP = [];
     spannames = [];
 
     for(let i = 0; i < ahpUser.variants.names.length ; i++){
@@ -212,8 +227,15 @@ function createSliders(ahpUser){
             newSliderGroup.appendChild(newSpan1);
             newSliderGroup.appendChild(newVSlider);
             newSliderGroup.appendChild(newSpan2);
-            variants_content.appendChild(newSliderGroup);
+            //variants_content.appendChild(newSliderGroup);
+            SLIDERGROUP.push(newSliderGroup);
         }
+
+        SLIDERGROUP = shuffle(SLIDERGROUP);
+        SLIDERGROUP.forEach(slider => {
+            variants_content.appendChild(slider);
+        })
+        SLIDERGROUP = [];
     }
 
 }
