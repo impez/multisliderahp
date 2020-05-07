@@ -7,6 +7,13 @@ let experts_content = document.querySelector(".experts");
 
 let ahpUser;
 
+let ahpExperts = {
+    everyCriteriaWeight: [],
+    everyVariantWeight: [],
+    criteriaAverage: [],
+    variantAverage: []
+}
+
 // Menu - przyciski
 let zacznijbtn = document.querySelector(".zacznij");
 let kryteriabtn = document.querySelector(".kryteria");
@@ -26,6 +33,8 @@ let listItems = document.querySelectorAll(".listItem");
 let start_btn = document.getElementById("startEvaluation");
 
 let nums = [];
+let GLOBAL_SLIDERS = new Set();
+let EXPERT_NUMBER = 1;
 
 (function(){
     let nm1 = 900;
@@ -156,7 +165,7 @@ function createSliders(ahpUser){
         newCSlider.id = `cslider${i}`
         newCSlider.classList.add("sliders");
 
-        noUiSlider.create(newCSlider, {
+        GLOBAL_SLIDERS.add(noUiSlider.create(newCSlider, {
             start: [500, 800, 1100],
             connect: true,
             direction: 'rtl',
@@ -164,7 +173,7 @@ function createSliders(ahpUser){
                 'min': 0,
                 'max': 1600
             }
-        });
+        }));
 
         newSliderGroup.appendChild(newSpan1);
         newSliderGroup.appendChild(newCSlider);
@@ -214,7 +223,7 @@ function createSliders(ahpUser){
             newVSlider.id = `vslider${VARIANT_SLIDER_NUMBER++}`
             newVSlider.classList.add("sliders");
 
-            noUiSlider.create(newVSlider, {
+            GLOBAL_SLIDERS.add(noUiSlider.create(newVSlider, {
                 start: [500, 800, 1100],
                 connect: true,
                 direction: 'rtl',
@@ -222,7 +231,7 @@ function createSliders(ahpUser){
                     'min': 0,
                     'max': 1600
                 }
-            });
+            }));
 
             newSliderGroup.appendChild(newSpan1);
             newSliderGroup.appendChild(newVSlider);
@@ -238,6 +247,22 @@ function createSliders(ahpUser){
         SLIDERGROUP = [];
     }
 
+}
+
+function resetSlidersValues(){
+    GLOBAL_SLIDERS.forEach(slider => slider.set([500,800,1100]));
+}
+
+function estimateExpertsDecisions(){
+
+    for(let j = 0; j < ahpUser.criterias.weights.length; j++){
+        let sum = 0;
+
+        for(let i = 0; i < ahpExperts.everyCriteriaWeight.length; i++){
+            sum += ahpExperts.everyCriteriaWeight[i][j];
+        }
+        ahpExperts.criteriaAverage.push(sum/ahpExperts.everyCriteriaWeight.length);
+    }
 }
 
 start_btn.addEventListener("click", () => {
@@ -328,15 +353,23 @@ rankingbtn.addEventListener("click", () => {
 
         let rating = ahpUser.getRanking();
 
+        let pExpert = document.createElement("p");
+        pExpert.innerHTML = `<u>Ekspert nr. ${EXPERT_NUMBER++}</u>`;
+        ranking_content.appendChild(pExpert);
+
         for(let i = 0; i < rating.variants.length; i++){
             let p = document.createElement("p");
-            p.innerHTML = `<b>${i+1}.</b> ${rating.variants[i]} (${  Math.round((rating.ratings[i]*100 + Number.EPSILON) * 100)/100 }%)`;
+            p.innerHTML = `${rating.variants[i]} (${  Math.round((rating.ratings[i]*100 + Number.EPSILON) * 100)/100 }%)`;
             ranking_content.appendChild(p);
         }
 
         let hr = document.createElement("hr");
         ranking_content.appendChild(hr);
 
+        ahpExperts.everyCriteriaWeight.push(ahpUser.criterias.weights);
+        ahpExperts.everyVariantWeight.push(ahpUser.variants.weights);
+
+        resetSlidersValues();
       } else {
 
       }
