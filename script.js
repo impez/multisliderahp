@@ -4,6 +4,7 @@ let criterias_content = document.querySelector(".criteriasWindow");
 let variants_content = document.querySelector(".variantsWindow");
 let ranking_content = document.querySelector(".ranking");
 let experts_content = document.querySelector(".experts");
+let blankinfo = document.querySelector(".blankPage");
 
 let ahpUser;
 
@@ -11,7 +12,9 @@ let ahpExperts = {
     everyCriteriaWeight: [],
     everyVariantWeight: [],
     criteriaAverage: [],
-    variantAverage: []
+    variantAverage: [],
+    consistencyIndexArrayCriterias: [],
+    consistencyIndexArrayVariants: []
 }
 
 // Menu - przyciski
@@ -20,6 +23,14 @@ let kryteriabtn = document.querySelector(".kryteria");
 let wariantybtn = document.querySelector(".warianty");
 let rankingbtn = document.querySelector(".rankingBtn");
 let ekspercibtn = document.querySelector(".expertsBtn");
+let resetSliderValuesBtn = document.querySelectorAll(".resetSliderValues");
+let newExpertBtn = document.querySelector(".newExpert");
+let checkChoicesBtn = document.querySelector(".checkChoices");
+
+let CRITERIA_SLIDER_ORDER = 0;
+let VARIANT_SLIDER_ORDER = 0;
+let backToVariantsBtn = document.getElementById("backToVariants");
+let backToCriteriasBtn = document.getElementById("backToCriterias");
 
 // Wstępny formularz
 let submit_criteria_btn = document.querySelector(".submitCriteria");
@@ -31,10 +42,58 @@ let criteria_list = document.querySelector(".criteriaList");
 let variant_list = document.querySelector(".variantList");
 let listItems = document.querySelectorAll(".listItem");
 let start_btn = document.getElementById("startEvaluation");
+let naglowki;
+let hCriteriaText = document.getElementById("hCriteria");
 
 let nums = [];
 let GLOBAL_SLIDERS = new Set();
 let EXPERT_NUMBER = 1;
+let CHECK_CHOICES_CHECKER = 0;
+let cIndexes = [];
+
+let GlobalCriteriaArrayList;
+let GlobalVariantArrayList;
+let OrderedCriteriaContentSliders = [];
+let OrderedVariantContentSliders = [];
+let toggleHighlight = true;
+
+var ctx = document.getElementById('myChart');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [],
+        datasets: [{
+            label: '%',
+            data: [],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
 
 (function(){
     let nm1 = 900;
@@ -54,6 +113,46 @@ let EXPERT_NUMBER = 1;
         })
     }
 }())
+
+function placeSlidersInArrays(){
+    for(let i=0; i<criterias_content.childElementCount; i++){
+        if(criterias_content.children[i].classList.contains("slidergrp")){
+            OrderedCriteriaContentSliders.push(criterias_content.children[i]);
+        }
+    }
+
+    for(let i=0; i<variants_content.childElementCount; i++){
+        if(variants_content.children[i].classList.contains("slidergrp")){
+            OrderedVariantContentSliders.push(variants_content.children[i]);
+        }   
+    }
+}
+
+function highlightSliderGroup(sliderGroup, type){
+    if(toggleHighlight){
+        if(type === 'criteria'){
+            for(let i=0; i<OrderedCriteriaContentSliders.length; i++){
+                OrderedCriteriaContentSliders[i].classList.remove("activeSlider");
+            }
+            sliderGroup.classList.add("activeSlider");
+        }
+        else if(type === 'variant'){
+            for(let i=0;i<OrderedVariantContentSliders.length; i++){
+                OrderedVariantContentSliders[i].classList.remove("activeSlider");
+            }
+            sliderGroup.classList.add("activeSlider");
+        }
+    }
+}
+
+function highlightEverySlider(){
+    for(let i=0; i<OrderedCriteriaContentSliders.length; i++){
+        OrderedCriteriaContentSliders[i].classList.add("activeSlider");
+    }
+    for(let i=0; i<OrderedVariantContentSliders.length; i++){
+        OrderedVariantContentSliders[i].classList.add("activeSlider");
+    }
+}
 
 function activateButton(btn){
     if(btn.classList.contains("rankingBtn")){
@@ -89,16 +188,12 @@ function activateButton(btn){
         variants_content.classList.remove("hide");
     }
 
-    console.log(btn);
-
     if(btn.classList.contains("expertsBtn") && !btn.classList.contains("disabled")){
         highlightoff();
         contentoff();
 
         btn.classList.add("highlight");
         experts_content.classList.remove("hide");
-
-        console.log(btn);
     }
 }
 
@@ -135,8 +230,13 @@ function shuffle(a) {
     return a;
 }
 
-function createSliders(ahpUser){
+function pushChartLabels(labels){
+    labels.forEach(label => {
+        myChart.data.labels.push(label);
+    })
+}
 
+function createSliders(ahpUser){
     let spannames = [];
     let SLIDERGROUP = [];
 
@@ -247,6 +347,30 @@ function createSliders(ahpUser){
         SLIDERGROUP = [];
     }
 
+    placeSlidersInArrays();
+    highlightSliderGroup(OrderedCriteriaContentSliders[0], "criteria");
+    highlightSliderGroup(OrderedVariantContentSliders[0], "variant");
+    OrderedCriteriaContentSliders[0].addEventListener("mouseenter", () => {
+        addSliderEventListeners();
+    })
+}
+
+function addSliderEventListeners(){
+        OrderedCriteriaContentSliders.forEach(slider => {
+            slider.addEventListener("mouseover", function highlightCriteria(){
+                highlightSliderGroup(slider, "criteria");
+            })
+        })
+    
+        OrderedVariantContentSliders.forEach(slider => {
+            slider.addEventListener("mouseover", function highlighVariant(){
+                highlightSliderGroup(slider, "variant");
+            })
+        })
+}
+
+function toggleSliderEventListeners(){
+    toggleHighlight =! toggleHighlight;
 }
 
 function resetSlidersValues(){
@@ -281,6 +405,9 @@ start_btn.addEventListener("click", () => {
         variantArrayList = [];
     }
     else{
+        GlobalCriteriaArrayList = criteriaArrayList;
+        GlobalVariantArrayList  = variantArrayList;
+
         ahpUser = new AHP(criteriaArrayList, variantArrayList);
         ahpUser.createMatrices();
         console.log(ahpUser);
@@ -296,6 +423,8 @@ start_btn.addEventListener("click", () => {
         kryteriabtn.classList.remove("disabled");
         kryteriabtn.classList.add("highlight");
         wariantybtn.classList.remove("disabled");
+
+        pushChartLabels(ahpUser.variants.names);
     }
 })
 
@@ -319,60 +448,76 @@ kryteriabtn.addEventListener("click", () => {
 
 ekspercibtn.addEventListener("click", () => {
     activateButton(ekspercibtn);
-    console.log("hello");
-
 })
 
 rankingbtn.addEventListener("click", () => {
 
     if(!rankingbtn.classList.contains("disabled")){
-    if (confirm('Czy chcesz zatwierdzić swoje wybory?')) {
-        activateButton(rankingbtn);
-
-        let criteriasArgs = [];
-        let variantsArgs = [];
-
-        for(let i = 1; i <= ahpUser.CRITERIA_SLIDERS_TOTAL; i++){
-            let partarr = eval(`cslider${i}.noUiSlider.get()`)
-            partarr.reverse();
-            partarr = partarr.map(el => convertNumber(Number(el)));
-
-            criteriasArgs.push(partarr);
+        if(ahpUser === null){
+            activateButton(rankingbtn);
         }
+        else if (confirm('Czy chcesz zatwierdzić swoje wybory?')) {
+            blankinfo.classList.add("hide");
+            activateButton(rankingbtn);
 
-        for(let i = 1; i<= ahpUser.VARIANT_SLIDERS_TOTAL*ahpUser.criterias.names.length; i++){
-            let partarr = eval(`vslider${i}.noUiSlider.get()`)
-            partarr.reverse();
-            partarr = partarr.map(el => convertNumber(Number(el)));
+            let criteriasArgs = [];
+            let variantsArgs = [];
 
-            variantsArgs.push(partarr);
+            for(let i = 1; i <= ahpUser.CRITERIA_SLIDERS_TOTAL; i++){
+                let partarr = eval(`cslider${i}.noUiSlider.get()`)
+                partarr.reverse();
+                partarr = partarr.map(el => convertNumber(Number(el)));
+
+                criteriasArgs.push(partarr);
+            }
+
+            for(let i = 1; i<= ahpUser.VARIANT_SLIDERS_TOTAL*ahpUser.criterias.names.length; i++){
+                let partarr = eval(`vslider${i}.noUiSlider.get()`)
+                partarr.reverse();
+                partarr = partarr.map(el => convertNumber(Number(el)));
+
+                variantsArgs.push(partarr);
+            }
+
+            ahpUser.fillMatrices(criteriasArgs, variantsArgs);
+            ahpUser.calculateWeights();
+
+            let rating = ahpUser.getRanking();
+
+            let pExpert = document.createElement("p");
+            pExpert.innerHTML = `<u>Ekspert nr. ${EXPERT_NUMBER++}</u>`;
+            //ranking_content.appendChild(pExpert);
+            experts_content.appendChild(pExpert);
+
+            for(let i = 0; i < rating.variants.length; i++){
+                let p = document.createElement("p");
+                let singleRating = Math.round((rating.ratings[i]*100 + Number.EPSILON) * 100)/100;
+                p.innerHTML = `${rating.variants[i]} (${singleRating}%)`;
+                //pushChartValue(singleRating);
+                //ranking_content.appendChild(p);
+                myChart.data.datasets[0].data.push(singleRating);
+                experts_content.appendChild(p);
+            }
+
+            let hr = document.createElement("hr");
+            //ranking_content.appendChild(hr);
+            experts_content.appendChild(hr);
+
+            ahpExperts.everyCriteriaWeight.push(ahpUser.criterias.weights);
+            ahpExperts.everyVariantWeight.push(ahpUser.variants.weights);
+
+            ahpExperts.consistencyIndexArrayCriterias[EXPERT_NUMBER-2] = [];
+            ahpExperts.consistencyIndexArrayVariants[EXPERT_NUMBER-2] = [];
+            ahpExperts.consistencyIndexArrayCriterias[EXPERT_NUMBER-2].push(ahpUser.getGeomConsistencyIndex(ahpUser.CRITERIA_MATRIX, ahpUser.criterias.weights));
+            for(let i=0; i< ahpUser.VARIANT_MATRIX.length; i++){
+                ahpExperts.consistencyIndexArrayVariants[EXPERT_NUMBER-2].push(ahpUser.getGeomConsistencyIndex(ahpUser.VARIANT_MATRIX[i], ahpUser.variants.weights[i]));
+            }
+            
+            toggleSliderEventListeners();
+            ahpUser = null;
+        } else {
+
         }
-
-        ahpUser.fillMatrices(criteriasArgs, variantsArgs);
-        ahpUser.calculateWeights();
-
-        let rating = ahpUser.getRanking();
-
-        let pExpert = document.createElement("p");
-        pExpert.innerHTML = `<u>Ekspert nr. ${EXPERT_NUMBER++}</u>`;
-        ranking_content.appendChild(pExpert);
-
-        for(let i = 0; i < rating.variants.length; i++){
-            let p = document.createElement("p");
-            p.innerHTML = `${rating.variants[i]} (${  Math.round((rating.ratings[i]*100 + Number.EPSILON) * 100)/100 }%)`;
-            ranking_content.appendChild(p);
-        }
-
-        let hr = document.createElement("hr");
-        ranking_content.appendChild(hr);
-
-        ahpExperts.everyCriteriaWeight.push(ahpUser.criterias.weights);
-        ahpExperts.everyVariantWeight.push(ahpUser.variants.weights);
-
-        resetSlidersValues();
-      } else {
-
-      }
     }
 })
 
@@ -405,4 +550,68 @@ submit_variant_btn.addEventListener("click", () => {
             variant_list.removeChild(event.target);
         })
     }
+})
+
+resetSliderValuesBtn.forEach(resetBtn => {
+    resetBtn.addEventListener("click", () => {
+        resetSlidersValues();
+    })
+})
+
+newExpertBtn.addEventListener("click", () => {
+    naglowki = document.querySelectorAll(".helem");
+    CHECK_CHOICES_CHECKER = 0;
+    ahpUser = {};
+    ahpUser = new AHP(GlobalCriteriaArrayList, GlobalVariantArrayList);
+    ahpUser.createMatrices();
+    activateButton(kryteriabtn);
+
+    hCriteriaText.removeChild(hCriteriaText.lastChild);
+
+    naglowki.forEach(h => {
+        for(let i=0; i<h.childElementCount; i++){
+            if(h.children[i].classList.contains("ci")){
+                h.removeChild(h.children[i]);
+            }
+        }
+    })
+
+    toggleSliderEventListeners();
+    highlightSliderGroup(OrderedCriteriaContentSliders[0], "criteria");
+    highlightSliderGroup(OrderedVariantContentSliders[0], "variant");
+})
+
+checkChoicesBtn.addEventListener("click", () => {
+        if(CHECK_CHOICES_CHECKER > 0){
+            activateButton(kryteriabtn);
+        }
+        else{
+            ++CHECK_CHOICES_CHECKER;
+            highlightEverySlider();
+
+            activateButton(kryteriabtn);
+            let cindexCriteria = document.createElement("p");
+            cindexCriteria.innerHTML = `CR: ${ahpExperts.consistencyIndexArrayCriterias[EXPERT_NUMBER-2].pop()}`;
+            cindexCriteria.classList.add("ci");
+            hCriteriaText.appendChild(cindexCriteria);
+            cIndexes.push(cindexCriteria);
+        
+            for(let i=0; i<variants_content.childElementCount; i++){
+                if(variants_content.children[i].classList.contains("helem")){
+                    let cindexVariant = document.createElement("p");
+                    cindexVariant.innerHTML = `CR: ${ahpExperts.consistencyIndexArrayVariants[EXPERT_NUMBER-2].shift()}`;
+                    cindexVariant.classList.add("ci");
+                    variants_content.children[i].appendChild(cindexVariant);
+                    cIndexes.push(cindexVariant);
+                }
+            }
+        }
+})
+
+backToCriteriasBtn.addEventListener("click", () => {
+    activateButton(kryteriabtn);
+})
+
+backToVariantsBtn.addEventListener("click", () => {
+    activateButton(wariantybtn);
 })

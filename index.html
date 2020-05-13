@@ -5,9 +5,9 @@
 
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="node_modules/chart.js/dist/Chart.css">
     <link rel="stylesheet" href="nouislider.css">
+    <link rel="stylesheet" href="style.css">
     
     <script src="https://kit.fontawesome.com/7fb72d68d1.js" crossorigin="anonymous" defer></script>
 
@@ -84,32 +84,32 @@
     <!-- Kryteria Content -->
 
     <div class="criteriasWindow content hide">
-        <h3>Porównaj które kryteria mają większe znaczenie:</h3>
-
-        <!--
-
-        
-        <div class="slidergrp">
-            <span class="sp">A</span>
-            <div id="slider" class="sliders"></div>
-            <span class="sp">B</span>
+        <div class = "buttonNavGroupA">
+        <button class="resetSliderValues navBtn">Zresetuj wartości sliderów <i class="fas fa-undo"></i></button>
+        <button id="backToVariants" class="navBtn">Przejdź do wariantów <i class="fas fa-long-arrow-alt-right"></i></button>
         </div>
-
-        -->
-
+        <h3 id="hCriteria">Porównaj które kryteria mają większe znaczenie:</h3>
     </div>
-
 
     <!-- Warianty Content -->
 
     <div class="variantsWindow content hide">
-
+        <div class = "buttonNavGroupA">
+        <button class="resetSliderValues navBtn">Zresetuj wartości sliderów <i class="fas fa-undo"></i></button>
+        <button id="backToCriterias" class="navBtn">Przejdź do kryteriów <i class="fas fa-long-arrow-alt-left"></i></button>
+        </div>
     </div>
-
 
     <!-- Ranking Content -->
     <div class="ranking content hide">
-        <h1>Wyniki: </h1>
+        <div class="buttonNavGroup">
+            <button class="newExpert navBtn">Nowy Ekspert <i class="fas fa-user"></i></button>
+            <button class="checkChoices navBtn choiceBtn">Przypomnij swoje wybory oraz<br>sprawdź współczynnik spójności<i class="fas fa-chart-pie"></i></button>
+        </div>
+
+        <div class="canv">
+            <canvas id="myChart"></canvas>
+        </div>
     </div>
 
     <div class="experts content hide">
@@ -119,7 +119,7 @@
         </div>
     </div>
 
-
+    <script src="node_modules/chart.js/dist/Chart.bundle.js"></script>
     <script src="nouislider.js"></script>
     <script src="AHP.js"></script>
     <script src="script.js"></script>

@@ -17,9 +17,21 @@ body{
     text-align: center;
 }
 
+.canv{
+    width: 65%;
+    background-color: rgba(32, 55, 102, 0.04);
+    margin-top: 40px;
+}
+
+#myChart{
+    border: 2px solid rgba(0,0,0, 0.2);
+    border-radius: 10px;
+}
+
 .ranking{
     display: flex;
     text-align: center;
+    align-items: center;
     flex-direction: column;
 }
 
@@ -33,7 +45,18 @@ body{
 
 .slidergrp{
     display: flex;
-    margin: 10px;
+    margin: 20px auto;
+    width: 100%;
+    opacity: 12%;
+    -webkit-filter: blur(3px);
+    -moz-filter: blur(3px);
+    -o-filter: blur(3px);
+    -ms-filter: blur(3px);
+    filter: blur(5px);
+}
+
+.slidergrp:hover{
+    cursor: pointer;
 }
 
 .sp{
@@ -47,16 +70,11 @@ body{
     justify-content: flex-end;
 }
 
-
-.sliders{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .criteriasWindow{
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .list{
@@ -152,6 +170,9 @@ body{
 }
 
 .variantsWindow{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
 }
 
@@ -188,9 +209,10 @@ body{
 
 .experts{
     display: flex;
-    justify-content: center;
     align-items: center;
-    text-align: center;
+    text-align: left;
+    padding: 30px;
+    flex-direction: column;
 }
 
 .block:hover{
@@ -247,4 +269,69 @@ body{
 
 .fa-cat{
     font-size: 100px;
+}
+
+.resetSliderValues{
+    width: 20%;
+    border-radius: 8px;
+    border: 2px solid rgba(19, 33, 61, 0.8);
+    transition: 0.4s opacity;
+    margin: 1px;
+    padding: 5px;
+}
+
+.navBtn{
+    width: 20%;
+    border-radius: 8px;
+    border: 0px solid rgba(19, 33, 61, 0.8);
+    margin: 1px;
+    padding: 5px;
+    transition: 0.5s background-color;
+}
+
+.buttonNavGroup{
+    display: flex;
+    justify-content: center;
+}
+
+.newExpert, .checkChoices{
+    margin: 1px;
+    height: 90px;
+    width: 220px;
+    padding: 15px;
+    margin: 10px;
+    background-color: white;
+    color: white;
+    background-color: rgba(19, 33, 61, 0.8);
+    margin: 0 10px;
+}
+
+.choiceBtn{
+    width: 400px;
+}
+
+.ci{
+    display: flex;
+    margin: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 16px;
+    color: red;
+    opacity: 0.5;
+    text-align: center;
+    justify-content: center;
+}
+
+.activeSlider{
+    opacity: 100%;
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -o-filter: blur(0px);
+    -ms-filter: blur(0px);
+    filter: blur(0px);
+    transition: 0.25s filter;
+}
+
+.navBtn:hover{
+    cursor: pointer;
+    background-color: rgba(52, 74, 119, 0.5);
 }

@@ -122,9 +122,9 @@
   border-radius: 3px;
 }
 .noUi-connect {
-  background: rgba(15, 35, 75, 0.8);
-  
+  background: rgba(15, 35, 75, 1);
 }
+
 /* Handles and cursors;
  */
 .noUi-draggable {

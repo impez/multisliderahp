@@ -1,7 +1,17 @@
+const RANDOM_INDEX = {
+    3: 0.52,
+    4: 0.89,
+    5: 1.11,
+    6: 1.25,
+    7: 1.35,
+    8: 1.4,
+    9: 1.45,
+    10: 1.49
+}
+
 class AHP{
 
     constructor(criterias, variants){
-
         this.criterias = {};
         this.variants = {};
         this.CRITERIA_MATRIX = [];
@@ -20,8 +30,66 @@ class AHP{
         }
     }
 
-    getRanking(){
+    getGeometricMean(values, degree){
+        return Math.pow(values.reduce(((el,acc) => el*acc),1), 1/degree);
+    }
 
+    getTemporaryGeomMatrix(matrix){
+        for(let i=0; i<matrix.length; i++){
+            for(let j=0; j<matrix.length; j++){
+                matrix[i][j] = this.getGeometricMean(matrix[i][j], matrix.length);
+            }
+        }
+        return matrix;
+    }
+
+    multiplyMatrix(A, B){
+        //A - Basic Matrix
+        //B - Weights
+        //tempMatrix - A3 = AxB
+        let LENGTH = A.length;
+        let tempMatrix = [];
+
+        for(let i=0; i<LENGTH; i++){
+            let tempValue = 0;
+            for(let j=0; j<LENGTH; j++){
+                tempValue += A[i][j] * B[j];
+            }
+            tempMatrix.push(tempValue);
+        }
+
+        return tempMatrix;
+    }
+
+    divideMatrix(A3, weightMatrix){
+        //C - tempMatrix A3 = AxB
+        //B - Weights
+        let LENGTH = A3.length;
+        let lambdaMatrix = [];
+
+        for(let i=0; i<LENGTH; i++){
+            lambdaMatrix.push(A3[i]/weightMatrix[i]);
+        }
+
+        return lambdaMatrix;
+    }
+
+    getGeomConsistencyIndex(matrix, weights){
+        if(matrix.length < 3){
+            return 0;
+        }
+        else{
+            let tempGeometryMatrix = this.getTemporaryGeomMatrix([...matrix]);
+            let A3 = this.multiplyMatrix(tempGeometryMatrix, weights);
+            let lambdaMatrix = this.divideMatrix(A3, weights);
+            let lambdaMax = (lambdaMatrix.reduce((val, acc) => val+acc,0)/lambdaMatrix.length);
+            let consistencyIndex = (lambdaMax - matrix.length)/(matrix.length - 1);
+    
+            return consistencyIndex/RANDOM_INDEX[matrix.length];
+        }
+    }
+
+    getRanking(){
         let finalRanking = {
             variants: this.variants.names,
             ratings: []
