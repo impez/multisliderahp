@@ -1,0 +1,127 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="charts/chart.js/dist/Chart.css">
+    <link rel="stylesheet" href="nouislider.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://kit.fontawesome.com/7fb72d68d1.js" crossorigin="anonymous" defer></script>
+
+    <title>Multirange Slider AHP</title>
+</head>
+<body>
+
+    <!-- Nav Content -->
+    <div class="nav">
+        <span>Analityczny Proces Hierarchiczny</span>
+    </div>
+
+    <!-- Menu Content -->
+
+    <div class="menu">
+        <div class="zacznij block highlight">
+            <i class="fas fa-folder-open"></i>
+            <p>Zacznij</p>
+        </div>
+
+        <div class="kryteria block disabled">
+            <i class="fas fa-angle-double-right"></i>
+            <p>Kryteria</p>
+        </div>
+
+        <div class="warianty block disabled">
+            <i class="fas fa-angle-double-right"></i>
+            <p>Warianty</p>
+        </div>
+
+        <div class="rankingBtn block disabled">
+            <i class="fas fa-balance-scale-left"></i>
+            <p>Ranking</p>
+        </div>
+
+        <div class="expertsBtn block">
+            <i class="fas fa-users"></i>
+            <p>Eksperci</p>
+        </div>
+    </div>
+
+    <!-- Start Content -->
+
+    <div class="start content">
+        <div class="criteriasInput inputs">
+            <input type="text" class="criteriaInput" placeholder="Wprowadź kryterium..."></input>
+			
+			<div class="sm-icons">
+				<i class="submitCriteria far fa-plus-square"></i>
+				<i class="far fa-minus-square"></i>
+			</div>
+			
+            <div class="criteriaList list">
+            </div>
+            
+        </div>
+
+        <div class="variantsInput inputs">
+            <input type="text" class="variantInput" placeholder="Wprowadź wariant..."></input>
+			
+			<div class="sm-icons">
+				<i class="submitVariant far fa-plus-square"></i>
+				<i class="far fa-minus-square"></i>
+			</div>
+
+            <div class="variantList list">
+            </div>
+        </div>
+        
+        <button class="btn" id="startEvaluation" data-tooltip="Wprowadź min. dwa warianty/kryteria">Dalej</button>
+        
+    </div>
+
+    <!-- Kryteria Content -->
+
+    <div class="criteriasWindow content hide">
+        <div class = "buttonNavGroupA">
+        <button class="resetSliderValues navBtn">Zresetuj wartości sliderów <i class="fas fa-undo"></i></button>
+        <button id="backToVariants" class="navBtn">Przejdź do wariantów <i class="fas fa-long-arrow-alt-right"></i></button>
+        </div>
+        <h3 id="hCriteria">Porównaj które kryteria mają większe znaczenie:</h3>
+    </div>
+
+    <!-- Warianty Content -->
+
+    <div class="variantsWindow content hide">
+        <div class = "buttonNavGroupA">
+        <button class="resetSliderValues navBtn">Zresetuj wartości sliderów <i class="fas fa-undo"></i></button>
+        <button id="backToCriterias" class="navBtn">Przejdź do kryteriów <i class="fas fa-long-arrow-alt-left"></i></button>
+        </div>
+    </div>
+
+    <!-- Ranking Content -->
+    <div class="ranking content hide">
+        <div class="buttonNavGroup">
+            <button class="newExpert navBtn">Nowy Ekspert <i class="fas fa-user"></i></button>
+            <button class="checkChoices navBtn choiceBtn">Przypomnij swoje wybory oraz<br>sprawdź współczynnik spójności<i class="fas fa-chart-pie"></i></button>
+        </div>
+
+        <div class="canv">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <div class="experts content hide">
+        <div class="blankPage">
+            <i class="fas fa-cat"></i>
+            <h1>Nic tu jeszcze nie ma...</h1>
+        </div>
+    </div>
+
+    <script src="charts/chart.js/dist/Chart.bundle.js"></script>
+    <script src="nouislider.js"></script>
+    <script src="AHP.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
