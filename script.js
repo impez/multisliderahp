@@ -615,3 +615,5 @@ backToCriteriasBtn.addEventListener("click", () => {
 backToVariantsBtn.addEventListener("click", () => {
     activateButton(wariantybtn);
 })
+
+console.log("hi");
