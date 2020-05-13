@@ -6,6 +6,8 @@ let ranking_content = document.querySelector(".ranking");
 let experts_content = document.querySelector(".experts");
 let blankinfo = document.querySelector(".blankPage");
 
+console.log("Ssss");
+
 let ahpUser;
 
 let ahpExperts = {
