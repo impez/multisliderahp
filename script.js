@@ -8,8 +8,6 @@ let blankinfo = document.querySelector(".blankPage");
 
 let ahpUser;
 
-console.log("AAA");
-
 let ahpExperts = {
     everyCriteriaWeight: [],
     everyVariantWeight: [],
@@ -582,6 +580,7 @@ newExpertBtn.addEventListener("click", () => {
         }
     })
 
+    removeDataFromCharts();
     toggleSliderEventListeners();
     highlightSliderGroup(OrderedCriteriaContentSliders[0], "criteria");
     highlightSliderGroup(OrderedVariantContentSliders[0], "variant");
