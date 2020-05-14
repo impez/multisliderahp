@@ -63,7 +63,7 @@ var myChart = new Chart(ctx, {
     data: {
         labels: [],
         datasets: [{
-            label: '%',
+            label: 'Ocena (w %)',
             data: [],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
